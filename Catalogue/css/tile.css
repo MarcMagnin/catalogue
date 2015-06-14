@@ -1,5 +1,8 @@
 ﻿.tileContainer {
-  height: 100%;
+  height: -moz-calc(100% - 80px)  !important;
+  height: -webkit-calc(100% - 80px) !important;
+  height: -o-calc(100% - 80px) !important;
+  height: calc(100% - 80px) !important;
   overflow: auto;
   -webkit-box-sizing: content-box !important;
   -moz-box-sizing: content-box !important;
