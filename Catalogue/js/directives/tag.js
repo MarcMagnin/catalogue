@@ -18,7 +18,7 @@ app.directive('tag', function ($http, $rootScope) {
             '</div>' +
              '<p><input type="text" ' +
                 'ng-model="new_value"' +
-                'typeahead="tags.Val for tags in getData($viewValue) | filter:$viewValue" ' +
+                'typeahead="tags.Val for tags in getData($viewValue) | suggestionfilter:$viewValue" ' +
                 'typeahead-loading="loading" ' +
                 'typeahead-on-select="onSelect($item, $model, $label)"' +
                 'class="input"></input></p>'+

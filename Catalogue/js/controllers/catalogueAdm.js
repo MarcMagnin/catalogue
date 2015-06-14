@@ -11,8 +11,8 @@ var Update = function () {
 };
 
 app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q, itemService, $filter, $mdDialog, $upload) {
-    $rootScope.apiRootUrl = "http://62.23.104.30/databases/catalogueMaison";
-    //$rootScope.apiRootUrl = "http://localhost:8088/databases/catalogueMaison";
+    //$rootScope.apiRootUrl = "http://62.23.104.30/databases/catalogueMaison";
+    $rootScope.apiRootUrl = "http://localhost:8088/databases/catalogueMaison";
 
     $scope.entityName = "Item"
     $scope.items = [];
@@ -37,13 +37,13 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
 
                   if (item.Auteurs) {
                       item.filter += item.Auteurs.map(function (val) {
-                          return 'f-' + cleanString(val);
+                          return tokenizeString(val);
                       }).join(' ');
                   }
                   
                   if (item.Tags) {
                       item.filter += " " + item.Tags.map(function (val) {
-                          return 'f-' + cleanString(val);
+                          return tokenizeString(val);
                       }).join(' ');
                   }
 
@@ -251,6 +251,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
                 $scope.searchPatternRecherche = $scope.searchedText.Val.split(" ").map(function (val) {
                     return '[class*=\'f-' + cleanString(val) + '\']';
                 }).join('');
+                console.log($scope.searchPatternRecherche);
             }
             else {
                 $scope.searchPatternRecherche = "";

@@ -83,8 +83,10 @@ function stripVowelAccent(str) {
     return str;
 }
 function tokenizeString(str) {
-    var str = removeDiacritics(str.toLowerCase()).replace(/[^\w\s-]/gi, '');
-    return 'fil-' + str ;
+    return str = removeDiacritics(str.toLowerCase())
+    .split(" ").map(function (val) {
+        return 'f-' + cleanString(val)
+    }).join(' ')
 }
 
 function tokenizeStringPattern(str) {
@@ -94,7 +96,7 @@ function tokenizeStringPattern(str) {
     }).join('')
 }
 function cleanString(string) {
-    return (string.replace(/[^\w\s-]/gi, '').toLowerCase().replace(/ /g, '') || "");
+    return (removeDiacritics(string.toLowerCase()).replace(/[^\w\s-]/gi, '').replace(/ /g, '') || "");
 }
 
 var maxWidth = 900;
