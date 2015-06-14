@@ -11,8 +11,8 @@ var Update = function () {
 };
 
 app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q, itemService, $filter, $mdDialog, $upload) {
-    //$rootScope.apiRootUrl = "http://62.23.104.30:8181/databases/catalogueFlo";
-    $rootScope.apiRootUrl = "http://localhost:8088/databases/catalogueFlo";
+    //$rootScope.apiRootUrl = "http://62.23.104.30:8181/databases/catalogueEurre";
+    $rootScope.apiRootUrl = "http://localhost:8088/databases/catalogueEurre";
 
     $scope.entityName = "Item"
     $scope.items = [];
@@ -137,6 +137,8 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
             prom.push(defer.promise);
             $scope.addItem(item).success(function (data, status, headers, config) {
                 item.Id = data.Key;
+                item.Tags = new Array();
+                item.Tags.push("maison");
                 $timeout(function () {
                     $scope.items.unshift(item);
                     $scope.$apply();
