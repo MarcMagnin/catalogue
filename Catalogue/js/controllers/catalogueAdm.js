@@ -137,8 +137,6 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
             prom.push(defer.promise);
             $scope.addItem(item).success(function (data, status, headers, config) {
                 item.Id = data.Key;
-                item.Tags = new Array();
-                item.Tags.push("maison");
                 $timeout(function () {
                     $scope.items.unshift(item);
                     $scope.$apply();
