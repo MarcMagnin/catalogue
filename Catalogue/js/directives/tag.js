@@ -18,7 +18,7 @@ app.directive('tag', function ($http, $rootScope) {
             '</div>' +
              '<p><input type="text" ' +
                 'ng-model="new_value"' +
-                'typeahead="tags.Val for tags in getData($viewValue) | suggestionfilter:$viewValue" ' +
+                'typeahead="tags.Val for tags in getData($viewValue) | filter:$viewValue" ' +
                 'typeahead-loading="loading" ' +
                 'typeahead-on-select="onSelect($item, $model, $label)"' +
                 'class="input"></input></p>'+
@@ -58,11 +58,13 @@ app.directive('tag', function ($http, $rootScope) {
                     }
                 }).then(function (res) {
                     $scope.loading = false;
-                    //var tags = [];
-                    //angular.forEach(res.data.Results, function (item) {
-                    //    tags.push(item.Name);
-                    //});
-                    return res.data.Results;
+                    var outputArray = [];
+                    angular.forEach(res.data.Results, function (item) {
+                        if (value && item.Val.substr(0, value.length).toLowerCase() == value.toLowerCase()) {
+                            outputArray.push(item);
+                        }
+                    });
+                    return outputArray;
                 });
             };
 
