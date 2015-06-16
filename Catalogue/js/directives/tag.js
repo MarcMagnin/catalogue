@@ -20,6 +20,7 @@ app.directive('tag', function ($http, $rootScope) {
                 'ng-model="new_value"' +
                 'typeahead="tags.Val for tags in getData($viewValue) | filter:$viewValue" ' +
                 'typeahead-loading="loading" ' +
+                'typeahead-focus-first="false" ' +
                 'typeahead-on-select="onSelect($item, $model, $label)"' +
                 'class="input"></input></p>'+
             '</div>',
@@ -43,22 +44,29 @@ app.directive('tag', function ($http, $rootScope) {
                 }
                 $scope.new_value = "";
             };
+
             $scope.onSelect = function ($item, $model, $label) {
                 $scope.add();
             };
+
             $scope.tags = [];
             $scope.loading = false;
             $scope.getData = function (value) {
                 $scope.loading = true;
+                
                 return $http.get($rootScope.apiRootUrl + '/indexes/' + $scope.fieldname, {
                     params: {
+                        sort: "Val",
                         query: "Val:" + value + "*",
                         pageSize: 10,
                         _: Date.now(),
                     }
                 }).then(function (res) {
+                    
                     $scope.loading = false;
                     var outputArray = [];
+                    if (!value)
+                        return [];
                     angular.forEach(res.data.Results, function (item) {
                         if (value && item.Val.substr(0, value.length).toLowerCase() == value.toLowerCase()) {
                             outputArray.push(item);
@@ -99,6 +107,7 @@ app.directive('tag', function ($http, $rootScope) {
                 if (event.keyCode == 13) {
                     // There's probably a better way to handle this...
                     $scope.add();
+                    $scope.getData('');
                 }
             });
         }
