@@ -107,7 +107,6 @@ app.directive('tag', function ($http, $rootScope) {
                 if (event.keyCode == 13) {
                     // There's probably a better way to handle this...
                     $scope.add();
-                    $scope.getData('');
                 }
             });
         }

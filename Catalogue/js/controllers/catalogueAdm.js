@@ -325,7 +325,10 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
 
 
     $scope.keyDown = function ($event) {
-    console.log($event.keyCode)        
+        console.log($event.keyCode)
+        if ($event.keyCode == 33 || $event.keyCode == 34 || $event.keyCode == 9 || $event.key == 17)
+            return;
+
         // prevent search when dialog control is open
         if ($('.md-dialog-container') && $('.md-dialog-container').length != 0) {
             return;
@@ -336,7 +339,6 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
         $("#search2").focus();
         $scope.searchFocused = true;
         if ($event.keyCode != 8 && $event.keyCode != 27) {
-            
             $scope.toggleSearch();
 
         }
