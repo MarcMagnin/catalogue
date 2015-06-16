@@ -15,7 +15,9 @@
 
 
     $scope.updateAttachment = function ($files, $event, fieldName) {
-         var item = $scope.selectedItem;
+        var item = $scope.selectedItem;
+        if ($files.length == 0)
+            return;
          $scope.parentScope.removeAttachment(item, fieldName);
          var file = $files[0];
          var fileReader = new FileReader();
