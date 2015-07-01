@@ -23,6 +23,10 @@ function sortByDate(a, b) {
     return ((aVal < bVal) ? -1 : ((aVal > bVal) ? 1 : 0));
 }
 
+function getFileExtension(filename) {
+    return filename.split('.').pop();
+}
+
 function delayLoop(collection, index, timer, action) {
     var i = 0;
     if (collection.length == 0)

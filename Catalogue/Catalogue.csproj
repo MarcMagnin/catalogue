@@ -673,6 +673,12 @@
     <Content Include="css\angularcCleaned.min.css">
       <DependentUpon>angularcCleaned.css</DependentUpon>
     </Content>
+    <Content Include="css\canvas.css">
+      <DependentUpon>canvas.less</DependentUpon>
+    </Content>
+    <Content Include="css\canvas.min.css">
+      <DependentUpon>canvas.css</DependentUpon>
+    </Content>
     <Content Include="css\dialog.css">
       <DependentUpon>dialog.less</DependentUpon>
     </Content>
@@ -739,7 +745,17 @@
     <Content Include="js\jquery.mixitup.js" />
     <Content Include="js\services\services.js" />
     <Content Include="js\tools.js" />
+    <Content Include="sketchfab\sketchfab.js" />
+    <Content Include="threejs\3d.js" />
+    <Content Include="threejs\three.min.js" />
     <Content Include="Web.config" />
+    <Content Include="webplayer\smaa_area_texture.png" />
+    <Content Include="webplayer\smaa_search_texture.png" />
+    <Content Include="webplayer\template\webplayer_template.html" />
+    <Content Include="webplayer\uranium.js" />
+    <Content Include="webplayer\webplayer.html" />
+    <Content Include="webplayer\webplayer.min.css" />
+    <Content Include="webplayer\webplayer.min.js" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="js\controllers\itemModalController.js" />
@@ -1107,12 +1123,17 @@
     <Content Include="css\angularcCleaned.css.map">
       <DependentUpon>angularcCleaned.css</DependentUpon>
     </Content>
+    <Content Include="css\canvas.less" />
+    <Content Include="css\canvas.css.map">
+      <DependentUpon>canvas.css</DependentUpon>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <Content Include="webplayer\uranium.js.mem" />
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup>

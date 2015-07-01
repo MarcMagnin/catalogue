@@ -131,6 +131,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
     $scope.addByDragAndDrop = function ($files, $event, $rejectedFiles) {
         var prom = [];
         angular.forEach($files, function (file, key) {
+           
             var item = new Item;
             //livre.datePublication = moment().format();
             var defer = $q.defer();
