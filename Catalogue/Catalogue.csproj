@@ -748,6 +748,7 @@
     <Content Include="sketchfab\sketchfab.js" />
     <Content Include="threejs\3d.js" />
     <Content Include="threejs\ColladaLoader.js" />
+    <Content Include="threejs\dat.gui.min.js" />
     <Content Include="threejs\OrbitControls.js" />
     <Content Include="threejs\three.js-master\.gitignore" />
     <Content Include="threejs\three.js-master\build\three.js" />

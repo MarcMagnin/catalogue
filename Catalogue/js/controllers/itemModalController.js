@@ -10,14 +10,15 @@
             setTimeout(function () {
                 var container = document.getElementById('modalContainer');
                 container.innerHTML = "";
-                console.log(container.offsetWidth)
                 var camera = new THREE.PerspectiveCamera(60, container.offsetWidth / container.offsetHeight, 1, 1000);
                 camera.up.set(0, 0, 1);
-                camera.position.z = 20;
-                camera.position.y = -30;
-                camera.position.x = -10;
+                camera.position.x = -30;
+                camera.position.y = -15;
+                camera.position.z = 15;
+                
+                
 
-                var controls = new THREE.OrbitControls(camera);
+                var controls = new THREE.OrbitControls(camera, container);
                 controls.addEventListener('change', render);
 
 
@@ -26,27 +27,120 @@
                 //  var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
                 // lights
 
-                light = new THREE.DirectionalLight(0xffffff);
-                light.castShadow = true;
-                light.shadowDarkness = 0.5;
-                light.position.set(-10, -30, 20);
-                //light.shadowCameraVisible = true;
-                scene.add(light);
+
+                /*datGUI controls object*/
+                guiControls = new function () {
+                    this.rotationX = 0.0;
+                    this.rotationY = 0.0;
+                    this.rotationZ = 0.0;
+
+                    this.lightX = -50;
+                    this.lightY = -60;
+                    this.lightZ = 90;
+                    this.intensity = 2;
+                    this.distance = 373;
+                    this.angle = 1.6;
+                    this.exponent = 1;
+                    this.shadowCameraNear = 34;
+                    this.shadowCameraFar = 2635;
+                    this.shadowCameraFov = 68;
+                    this.shadowCameraVisible = false;
+                    this.shadowMapWidth = 1512;
+                    this.shadowMapHeight = 1512;
+                    this.shadowBias = 0.00;
+                    this.shadowDarkness = 0.45;
+
+                }
+                /*adds spot light with starting parameters*/
+                spotLight = new THREE.SpotLight(0xffffff);
+                spotLight.castShadow = true;
+                spotLight.position.set(-50, -60, 90);
+                spotLight.intensity = guiControls.intensity;
+                spotLight.distance = guiControls.distance;
+                spotLight.angle = guiControls.angle;
+                spotLight.exponent = guiControls.exponent;
+                spotLight.shadowCameraNear = guiControls.shadowCameraNear;
+                spotLight.shadowCameraFar = guiControls.shadowCameraFar;
+                spotLight.shadowCameraFov = guiControls.shadowCameraFov;
+                spotLight.shadowMapWidth = guiControls.shadowMapWidth;
+                spotLight.shadowMapHeight = guiControls.shadowMapHeight;
+                spotLight.shadowCameraVisible = guiControls.shadowCameraVisible;
+                spotLight.shadowBias = guiControls.shadowBias;
+                spotLight.shadowDarkness = guiControls.shadowDarkness;
+                scene.add(spotLight);
+
+                /*adds controls to scene*/
+                datGUI = new dat.GUI({ autoPlace: true });
+                datGUI.domElement.id = 'datGUI';
+                var customContainer = $('.modalContainerDrop').append($(datGUI.domElement));
+
+                datGUI.add(guiControls, 'lightX', -180, 180).onChange(function (value, event) {
+                    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.add(guiControls, 'lightY', -180, 180).onChange(function (value) {
+                    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.add(guiControls, 'lightZ', -180, 180).onChange(function (value) {
+                    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+
+                datGUI.add(guiControls, 'intensity', 0.01, 5).onChange(function (value) {
+                    spotLight.intensity = value;
+                });
+               
+                datGUI.add(guiControls, 'distance', 0, 1000).onChange(function (value) {
+                    spotLight.distance = value;
+                });
+                datGUI.add(guiControls, 'angle', 0.001, 1.570).onChange(function (value) {
+                    spotLight.angle = value;
+                });
+                datGUI.add(guiControls, 'exponent', 0, 50).onChange(function (value) {
+                    spotLight.exponent = value;
+                });
+                datGUI.add(guiControls, 'shadowCameraNear', 0, 100).name("Near").onChange(function (value) {
+                    spotLight.shadowCamera.near = value;
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.add(guiControls, 'shadowCameraFar', 0, 5000).name("Far").onChange(function (value) {
+                    spotLight.shadowCamera.far = value;
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.add(guiControls, 'shadowCameraFov', 1, 180).name("Fov").onChange(function (value) {
+                    spotLight.shadowCamera.fov = value;
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.add(guiControls, 'shadowCameraVisible').onChange(function (value) {
+                    spotLight.shadowCameraVisible = value;
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.add(guiControls, 'shadowBias', 0, 1).onChange(function (value) {
+                    spotLight.shadowBias = value;
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.add(guiControls, 'shadowDarkness', 0, 1).onChange(function (value) {
+                    spotLight.shadowDarkness = value;
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.close();
 
 
                 light = new THREE.AmbientLight(0x222222);
                 scene.add(light);
+                light = new THREE.HemisphereLight(0x222222);
+                light.intensity = 0.5;
+                scene.add(light);
 
-
+                
                 var renderer = new THREE.WebGLRenderer({ antialias: true });
                 renderer.setSize(container.offsetWidth, container.offsetHeight);
                 renderer.setPixelRatio(window.devicePixelRatio);
                 renderer.shadowMapEnabled = true;
-                renderer.shadowMapDarkness = 0.9;
-                renderer.gammaInput = true;
-                renderer.gammaOutput = true;
+                renderer.shadowMapType = THREE.PCFSoftShadowMap;
+                renderer.shadowMapDarkness = 0.5;
                 renderer.shadowMapSoft = true;
-                renderer.shadowMapCullFace = THREE.CullFaceBack;
 
              
                 container.appendChild(renderer.domElement);
@@ -75,12 +169,12 @@
                     // Function when resource is loaded
                     function (collada) {
                         dae = collada.scene;
-                        dae.castShadow = true;
-                        dae.receiveShadow = true;
                         dae.traverse(function (child) {
                             if (child instanceof THREE.Mesh) {
                                  child.castShadow = true;
                                  child.receiveShadow = true;
+                                 child.alphaTest = 0.5;
+                                 console.log(child);
                             }
                         });
                         scene.add(dae);
@@ -96,6 +190,10 @@
 
 
                 window.addEventListener('resize', onWindowResize, false);
+
+
+
+
 
                 animate();
 
