@@ -12,14 +12,20 @@
                 </button>
 
                 <tag item="selectedItem" entityname="'Item'" fieldname="'Tags'"></tag>
-                <div ng-file-drop ng-model="files" class="drop-box drop-zone clickable form-control" drag-over-class="dragover" multiple="false"
-                     allow-dir="false" accept="*" ng-file-select="" ng-file-change="updateAttachment($files, $event, 'Image')">
-
-                    <ng-md-icon ng-hide="selectedItem.Image" class="image-placehoder center-content" icon="image" size="88"></ng-md-icon>
-                    <img ng-show="selectedItem.Image" style="width:100%" ng-src="{{::parentScope.apiRootUrl}}/{{selectedItem.Image}}" />
-
+                <div ng-file-drop ng-model="files" class="drop-box drop-zone form-control" drag-over-class="dragover" multiple="true"
+                     allow-dir="false" accept="*" ng-file-change="updateTextures($files, $event, 'Image')">
+                   
                 </div>
 
+                <div ng-file-drop ng-model="files" class="drop-box drop-zone clickable form-control modalContainerDrop" drag-over-class="dragover" multiple="false"
+                     allow-dir="false" accept="*" ng-file-change="updateAttachment($files, $event, 'Image')">
+                    <div id="modalContainer" class="modalContainer">
+                        <ng-md-icon ng-hide="selectedItem.Image" class="image-placehoder center-content" icon="image" size="88"></ng-md-icon>
+                        <img ng-show="selectedItem.Image" style="width:100%" ng-src="{{::parentScope.apiRootUrl}}/{{selectedItem.Image}}" />
+                    </div>
+                </div>
+
+               
 
             </div>
         </div>
