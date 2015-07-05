@@ -2,10 +2,13 @@
     // Assigned from construction <code>locals</code> options...
     $scope.parentScope = parentScope;
     $scope.selectedItem = selectedItem;
-
+    $scope.scene;
+    $scope.renderer;
+    $scope.dae;
     // Texture CORS problem : http://stackoverflow.com/questions/30853339/three-js-collada-textures-not-loading
 
     $scope.init = function () {
+        $scope.parentScope.itemModalController = $scope;
         if ($scope.selectedItem.model3D) {
             setTimeout(function () {
                 var container = document.getElementById('modalContainer');
@@ -15,15 +18,15 @@
                 camera.position.x = -30;
                 camera.position.y = -15;
                 camera.position.z = 15;
-                
-                
+
+
 
                 var controls = new THREE.OrbitControls(camera, container);
                 controls.addEventListener('change', render);
 
 
 
-                var scene = new THREE.Scene();
+                $scope.scene = new THREE.Scene();
                 //  var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
                 // lights
 
@@ -37,18 +40,18 @@
                     this.lightX = -50;
                     this.lightY = -60;
                     this.lightZ = 90;
-                    this.intensity = 2;
-                    this.distance = 373;
+                    this.intensity = 1.4;
+                    this.distance = 1000;
                     this.angle = 1.6;
                     this.exponent = 1;
-                    this.shadowCameraNear = 34;
-                    this.shadowCameraFar = 2635;
-                    this.shadowCameraFov = 68;
+                    this.shadowCameraNear = 3;
+                    this.shadowCameraFar = 3235;
+                    this.shadowCameraFov = 45;
                     this.shadowCameraVisible = false;
                     this.shadowMapWidth = 1512;
                     this.shadowMapHeight = 1512;
                     this.shadowBias = 0.00;
-                    this.shadowDarkness = 0.45;
+                    this.shadowDarkness = 0.5;
 
                 }
                 /*adds spot light with starting parameters*/
@@ -67,7 +70,7 @@
                 spotLight.shadowCameraVisible = guiControls.shadowCameraVisible;
                 spotLight.shadowBias = guiControls.shadowBias;
                 spotLight.shadowDarkness = guiControls.shadowDarkness;
-                scene.add(spotLight);
+                $scope.scene.add(spotLight);
 
                 /*adds controls to scene*/
                 datGUI = new dat.GUI({ autoPlace: true });
@@ -90,7 +93,7 @@
                 datGUI.add(guiControls, 'intensity', 0.01, 5).onChange(function (value) {
                     spotLight.intensity = value;
                 });
-               
+
                 datGUI.add(guiControls, 'distance', 0, 1000).onChange(function (value) {
                     spotLight.distance = value;
                 });
@@ -128,26 +131,26 @@
 
 
                 light = new THREE.AmbientLight(0x222222);
-                scene.add(light);
+                $scope.scene.add(light);
                 light = new THREE.HemisphereLight(0x222222);
-                light.intensity = 0.5;
-                scene.add(light);
+                light.intensity = 0.6;
+                $scope.scene.add(light);
 
-                
-                var renderer = new THREE.WebGLRenderer({ antialias: true });
-                renderer.setSize(container.offsetWidth, container.offsetHeight);
-                renderer.setPixelRatio(window.devicePixelRatio);
-                renderer.shadowMapEnabled = true;
-                renderer.shadowMapType = THREE.PCFSoftShadowMap;
-                renderer.shadowMapDarkness = 0.5;
-                renderer.shadowMapSoft = true;
 
-             
-                container.appendChild(renderer.domElement);
+                $scope.renderer = new THREE.WebGLRenderer({ antialias: true });
+                $scope.renderer.setSize(container.offsetWidth, container.offsetHeight);
+                $scope.renderer.setPixelRatio(window.devicePixelRatio);
+                $scope.renderer.shadowMapEnabled = true;
+                $scope.renderer.shadowMapType = THREE.PCFSoftShadowMap;
+                //$scope.renderer.shadowMapDarkness = 0.5;
+                //$scope.renderer.shadowMapSoft = true;
+
+
+                container.appendChild($scope.renderer.domElement);
 
 
                 function render() {
-                    renderer.render(scene, camera);
+                    $scope.renderer.render($scope.scene, camera);
 
 
                 }
@@ -168,16 +171,16 @@
                     $scope.parentScope.apiRootUrl + "/" + $scope.selectedItem.model3D,
                     // Function when resource is loaded
                     function (collada) {
-                        dae = collada.scene;
-                        dae.traverse(function (child) {
+                        $scope.dae = collada.scene;
+                        $scope.dae.traverse(function (child) {
                             if (child instanceof THREE.Mesh) {
-                                 child.castShadow = true;
-                                 child.receiveShadow = true;
-                                 child.alphaTest = 0.5;
-                                 console.log(child);
+                                if (child.material.transparent == false) {
+                                    child.castShadow = true;
+                                    child.receiveShadow = true;
+                                }
                             }
                         });
-                        scene.add(dae);
+                        $scope.scene.add($scope.dae);
 
                         render();
                         animate()
@@ -202,7 +205,7 @@
                     camera.aspect = container.offsetWidth / container.offsetHeight;
                     camera.updateProjectionMatrix();
 
-                    renderer.setSize(container.offsetWidth, container.offsetHeight);
+                    $scope.renderer.setSize(container.offsetWidth, container.offsetHeight);
 
                     render();
 
@@ -210,7 +213,7 @@
 
 
             }, 300);
-           
+
             //// instantiate a loader
             //var loader = new THREE.JSONLoader();
 
@@ -226,11 +229,14 @@
             //    }
             //);
 
-         
+
 
         }
-       
+
     }
+    $scope.onCloseDialog = function () {
+        $scope.scene.remove($scope.dae);
+    };
 
     $scope.closeDialog = function () {
         // Easily hides most recent dialog shown...
@@ -288,7 +294,7 @@
     };
 
     $scope.updateAttachment = function ($files, $event, fieldName) {
-         var item = $scope.selectedItem;
+        var item = $scope.selectedItem;
         if ($files.length == 0)
             return;
         var file = $files[0];
@@ -297,28 +303,28 @@
             fieldName = "model3D";
         }
 
-         $scope.parentScope.removeAttachment(item, fieldName);
-         var fileReader = new FileReader();
-         fileReader.onload = function (e) {
-             $scope.upload =
-                 $upload.http({
-                     url: $rootScope.apiRootUrl + '/static/' + item.Id + '/' + file.name,
-                     method: "PUT",
-                     headers: { 'Content-Type': file.type },
-                     data: e.target.result
-                 }).progress(function (evt) {
-                     // Math.min is to fix IE which reports 200% sometimes
-                     //   $scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-                     console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
-                 }).success(function (data, status, headers, config) {
-                     // mise à jour du livre avec l'URI de l'image
-                     $scope.parentScope.setAttachment(file.name, item, fieldName);
+        $scope.parentScope.removeAttachment(item, fieldName);
+        var fileReader = new FileReader();
+        fileReader.onload = function (e) {
+            $scope.upload =
+                $upload.http({
+                    url: $rootScope.apiRootUrl + '/static/' + item.Id + '/' + file.name,
+                    method: "PUT",
+                    headers: { 'Content-Type': file.type },
+                    data: e.target.result
+                }).progress(function (evt) {
+                    // Math.min is to fix IE which reports 200% sometimes
+                    //   $scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                    console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+                }).success(function (data, status, headers, config) {
+                    // mise à jour du livre avec l'URI de l'image
+                    $scope.parentScope.setAttachment(file.name, item, fieldName);
 
-                 }).error(function (err) {
-                     alert('Error occured during upload');
-                 });
-         }
-         fileReader.readAsArrayBuffer(file);
+                }).error(function (err) {
+                    alert('Error occured during upload');
+                });
+        }
+        fileReader.readAsArrayBuffer(file);
 
-     };
+    };
 });

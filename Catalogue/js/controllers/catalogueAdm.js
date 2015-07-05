@@ -20,6 +20,8 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
     $scope.searchPattern = "*";
     $scope.searchedText = {};
     $scope.searchedText.Val = "";
+    $scope.itemModalController = "";
+
     $scope.init = function () {
         itemAdded = 0;
 
@@ -125,7 +127,11 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
                 selectedItem: $scope.selectedItem,
                 parentScope: $scope
             }
-        })
+        }).then(function () {
+            $scope.itemModalController.onCloseDialog()
+        }, function () {
+            $scope.itemModalController.onCloseDialog()
+        });
     }
 
     $scope.addByDragAndDrop = function ($files, $event, $rejectedFiles) {
