@@ -8,22 +8,21 @@ app.directive('tag', function ($http, $rootScope, $timeout) {
             fieldname: '=',
         },
         template:
-            '<div class="tags-directive">' +
+            '<div>' +
              ' <label class="control-label">{{fieldname}}</label>' +
             '<div class="tags">' +
-                '<button class="tag-button repeat-item" ng-repeat="(idx, tag) in item[fieldname] track by $index" ng-click="remove(idx)">'+
+                '<button class="tag-button repeat-item" ng-repeat="(idx, tag) in item[fieldname] track by $index" ng-click="remove(idx)">' +
         '{{tag}}' +
         '<md-icon class="md-icon tag-remove-icon" md-svg-src="images/close.svg"></md-icon>' +
-'</button>' +
-            '</div><form name="myForm" ng-submit="myForm.$valid && submit()">' +
-             '<p><input name="myInput" type="text" ' +
+'</button><form name="myForm" ng-submit="myForm.$valid && submit()"><input name="myInput" type="text" ' +
                 'ng-model="new_value"' +
                 'typeahead="tags.Val for tags in getData($viewValue) | filter:$viewValue" ' +
                 'typeahead-loading="loading" ' +
                 'typeahead-focus-first="false" ' +
                 'typeahead-editable="true" ' +
                 'typeahead-on-select="onSelect($item, $model, $label); asyncSelected = \'\'" ' +
-                'class="input"></input></form></p>' +
+                'class="input"></input></form>' +
+            '</div>' +
             '</div>',
         //'<i ng-show="loading" class="glyphicon glyphicon-refresh"></i> ' +
         //'<a class="btn" ng-click="add()">Ajouter</a>'
@@ -38,7 +37,7 @@ app.directive('tag', function ($http, $rootScope, $timeout) {
                 if (!$scope.new_value)
                     return;
 
-             
+
 
                 if (!$scope.item[$scope.fieldname])
                     $scope.item[$scope.fieldname] = new Array();
@@ -57,7 +56,7 @@ app.directive('tag', function ($http, $rootScope, $timeout) {
             $scope.loading = false;
             $scope.getData = function (value) {
                 $scope.loading = true;
-                
+
                 return $http.get($rootScope.apiRootUrl + '/indexes/' + $scope.fieldname, {
                     params: {
                         sort: "Val",
@@ -66,7 +65,7 @@ app.directive('tag', function ($http, $rootScope, $timeout) {
                         _: Date.now(),
                     }
                 }).then(function (res) {
-                    
+
                     $scope.loading = false;
                     var outputArray = [];
                     if (!value)
@@ -116,7 +115,7 @@ app.directive('tag', function ($http, $rootScope, $timeout) {
             //        // There's probably a better way to handle this...
             //        $scope.add();
             //    }
-            
+
             //});
             input.bind('keyup', function (event) {
                 // But we only care when Enter was pressed
@@ -126,7 +125,7 @@ app.directive('tag', function ($http, $rootScope, $timeout) {
                     //setTimeout(function(){
                     //    $('.input').blur();
                     //},1000)
-                    
+
                     $scope.$apply();
                 }
 

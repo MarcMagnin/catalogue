@@ -15,13 +15,17 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
     $rootScope.apiRootUrl = "http://localhost:8086/databases/catalogueMaison";
 
     $scope.entityName = "Item"
+    $scope.itemsPool = [];
     $scope.items = [];
     $scope.tags = [];
+    $scope.shownItems = [];
     $scope.searchPattern = "*";
     $scope.searchedText = {};
     $scope.searchedText.Val = "";
     $scope.itemModalController = "";
+    $scope.filtering = false;
 
+    $scope.globalCounter = 0;
     $scope.init = function () {
         itemAdded = 0;
 
@@ -29,56 +33,75 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
         itemService.get()
           .then(function (items) {
 
-              var $container = $('#Container');
-              if ($container.mixItUp('isLoaded')) {
-                  $container.mixItUp('destroy')
-              }
-              delayLoop(items, 0, 0, function (item) {
-                  item.filter = "";
-                  item.Id = item['@metadata']['@id'];
+              $scope.prepareFilters(items)
+              $scope.itemsPool = items;
 
-                  if (item.Auteurs) {
-                      item.filter += item.Auteurs.map(function (val) {
-                          return tokenizeString(val);
-                      }).join(' ');
-                  }
-                  
-                  if (item.Tags) {
-                      item.filter += " " + item.Tags.map(function (val) {
-                          return tokenizeString(val);
-                      }).join(' ');
-                  }
-
-                  
-                  $scope.items.push(item);
-                  if ($scope.items.length == 23) {
-                      $scope.$apply();
-                      if (!$container.mixItUp('isLoaded')) {
-                          $container.mixItUp({ animation: { enable: enableAnimation } });
-                      }
-                  }
-
-                  if ($scope.items.length % 30 == 0) {
-                      $scope.$apply();
-                      if ($container.mixItUp('isLoaded')) {
-                          $container.mixItUp('filter', $scope.searchPattern);
-                      }
-                  }
-
-
-                  if ($scope.items.length == items.length) {
-
-                      $scope.$apply();
-                      $scope.dataReady = true;
-                      if (!$container.mixItUp('isLoaded')) {
-                          $container.mixItUp({ animation: { enable: enableAnimation } });
-                      } else {
-                          $container.mixItUp('filter', $scope.searchPattern);
-                      }
-                  }
-              });
+              $scope.loadMore();
+              filterCallback();
           })
     };
+
+    $scope.prepareFilters = function (items) {
+        for (var i = 0; i < items.length; i++) {
+            items[i].filter = "";
+            items[i].Id = items[i]['@metadata']['@id'];
+            if (items[i].Auteurs) {
+                items[i].filter += items[i].Auteurs.map(function (val) {
+                    return tokenizeString(val);
+                }).join(' ');
+            }
+
+            if (items[i].Tags) {
+                items[i].filter += " " + items[i].Tags.map(function (val) {
+                    return tokenizeString(val);
+                }).join(' ');
+            }
+        }
+    }
+
+    $scope.loadMore = function () {
+        if ($scope.filtering && $('#Container')[0].scrollHeight <= $(window).height()) 
+            return;
+        console.log($scope.itemsPool.length);
+        for (var i = 0, counter = 0; i < ($scope.itemsPool.length < 40 ? $scope.itemsPool.length : 40) && counter < 40 ; i++, counter++) {
+            $scope.items.push($scope.itemsPool[i]);
+            $scope.itemsPool.splice(i--, 1);
+            $scope.globalCounter++;
+            console.log($scope.globalCounter);
+        }
+        $timeout(function () {
+            $scope.dataReady = true;
+            $scope.$apply();
+            var $container = $('#Container');
+            if (!$container.mixItUp('isLoaded')) {
+                $container.mixItUp({ animation: { enable: enableAnimation } });
+            } else {
+                $container.mixItUp('filter', $scope.searchPattern, filterCallback);
+            }
+
+            if ($scope.itemsPool.length > 0 && $('#Container')[0].scrollHeight <= $(window).height())
+                $scope.loadMore();
+        })
+    };
+
+    function loadMoreFromFilter(items) {
+        for (var i = 0; i < items.length ; i++) {
+            $scope.items.push(items[i]);
+            $scope.itemsPool.splice($scope.itemsPool.indexOf(items[i]), 1);
+            $scope.globalCounter++;
+            console.log($scope.globalCounter);
+        }
+        $timeout(function () {
+            $scope.dataReady = true;
+            $scope.$apply();
+            var $container = $('#Container');
+            if (!$container.mixItUp('isLoaded')) {
+                $container.mixItUp({ animation: { enable: enableAnimation } });
+            } else {
+                $container.mixItUp('filter', $scope.searchPattern, filterCallback);
+            }
+        })
+    }
 
 
     $scope.delete = function (item, $event) {
@@ -137,7 +160,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
     $scope.addByDragAndDrop = function ($files, $event, $rejectedFiles) {
         var prom = [];
         angular.forEach($files, function (file, key) {
-           
+
             var item = new Item;
             //livre.datePublication = moment().format();
             var defer = $q.defer();
@@ -147,30 +170,60 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
                 $timeout(function () {
                     $scope.items.unshift(item);
                     $scope.$apply();
-                    $("#Container").mixItUp('filter', $scope.searchPattern);
+                    $("#Container").mixItUp('filter', $scope.searchPattern, filterCallback);
                 })
 
-                defer.resolve();
-                var fileReader = new FileReader();
-                fileReader.onload = function (e) {
+
+
+                resizeImage(file, $q.defer()).then(function (fileBlob) {
                     $upload.http({
-                        url: $rootScope.apiRootUrl + '/static/' + item.Id + '/' + file.name,
+                        url: $rootScope.apiRootUrl + '/static/' + item.Id + '/' + fileBlob.name,
                         method: "PUT",
-                        headers: { 'Content-Type': file.type },
-                        data: e.target.result
+                        headers: { 'Content-Type': fileBlob.blob.type },
+                        data: fileBlob.blob
                     }).progress(function (evt) {
                         // Math.min is to fix IE which reports 200% sometimes
                         //   $scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
                         console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
                     }).success(function (data, status, headers, config) {
                         // mise à jour du livre avec l'URI de l'image
-                        $scope.setAttachment(file.name, item, 'Image');
+                        $scope.setAttachment(fileBlob.name, item, 'Image');
+
+                        var fileReader = new FileReader();
+                        fileReader.onload = function (e) {
+                            // upload hi resolution
+                            $upload.http({
+                                url: $rootScope.apiRootUrl + '/static/' + item.Id + '/HI_' + file.name,
+                                method: "PUT",
+                                headers: { 'Content-Type': file.type },
+                                data: e.target.result
+                            }).progress(function (evt) {
+                                // Math.min is to fix IE which reports 200% sometimes
+                                //   $scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                                console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+                            }).success(function (data, status, headers, config) {
+                                // mise à jour du livre avec l'URI de l'image
+                                // $scope.setAttachment('HI_' + file.name, item, 'ImageHi');
+
+                            }).error(function (err) {
+                                alert('Error occured during upload');
+                            });
+                        }
+                        fileReader.readAsArrayBuffer(file);
+
+
 
                     }).error(function (err) {
                         alert('Error occured during upload');
                     });
                 }
-                fileReader.readAsArrayBuffer(file);
+
+                ), function (errorPayload) {
+                    alert('Error occured during resize');
+                };
+
+
+                defer.resolve();
             }).
             error(function (data, status, headers, config) {
                 console.log(data);
@@ -186,7 +239,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
         var update = new Update();
         update.Type = 'Set';
         update.Name = fieldName;
-        update.Value = attachmentUrl;
+        update.Value = fileName;
         $http({
             method: 'PATCH',
             headers: { 'Raven-Entity-Name': $scope.entityName },
@@ -194,7 +247,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
             data: angular.toJson(new Array(update))
         }).
             success(function (data, status, headers, config) {
-                item[fieldName] = attachmentUrl;
+                item[fieldName] = fileName;
                 console.log(fieldName)
             }).
             error(function (data, status, headers, config) {
@@ -232,7 +285,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
             $timeout(function () {
                 $scope.items.unshift($scope.selectedItem);
                 $scope.$apply();
-                $("#Container").mixItUp('filter', $scope.searchPattern);
+                $("#Container").mixItUp('filter', $scope.searchPattern, filterCallback);
             })
 
             //$("#Container").mixItUp('append', $('.tile'));
@@ -244,6 +297,16 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
 
 
 
+    }
+
+    function filterCallback(state) {
+        if ($scope.searchedText.Val) {
+            $scope.shownItems = $.grep($scope.items, function (e) {
+                return e.filter.indexOf("f-" + $scope.searchedText.Val) != -1;
+            });
+        } else {
+            $scope.shownItems = $scope.items;
+        }
     }
 
     $scope.validateSearch = function (keyEvent) {
@@ -279,10 +342,21 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
         filter();
     }
 
+
+
     function filter() {
         if (!$('#Container').mixItUp('isLoaded')) {
             return;
         }
+
+        // add items that are still in the pool and match the filter
+        var items = $.grep($scope.itemsPool, function (e) {
+            return e.filter.indexOf("f-" + $scope.searchedText.Val) != -1;
+        });
+        if (items.length > 0) {
+            loadMoreFromFilter(items);
+        }
+
         if ($('#Container').mixItUp('isMixing')) {
             setTimeout(function () {
                 filter();
@@ -290,7 +364,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
         } else {
             var state = $('#Container').mixItUp('getState');
             if (state.activeFilter != $scope.searchPattern) {
-                $('#Container').mixItUp('filter', $scope.searchPattern);
+                $('#Container').mixItUp('filter', $scope.searchPattern, filterCallback);
             } else {
                 // skip filter
             }
@@ -349,9 +423,9 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
             $scope.toggleSearch();
 
         }
-        
 
-        
+
+
 
     }
 
@@ -364,24 +438,24 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
         }
         if ($event.keyCode == 27) {
             $timeout(function () {
-                
+
                 $scope.searchedText.Val = "";
                 $("#search2").val('');
                 $scope.validateSearch("");
                 $scope.closeSearch();
             })
-           
+
             return;
         }
-            if ($("#search2").val().length == 0) {
+        if ($("#search2").val().length == 0) {
 
-                $scope.validateSearch("");
-                $scope.closeSearch();
-                return;
-            }
-        
+            $scope.validateSearch("");
+            $scope.closeSearch();
+            return;
+        }
 
-       
+
+
     }
 
     $scope.toggleSearch = function () {
