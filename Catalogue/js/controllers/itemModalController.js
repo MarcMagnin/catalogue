@@ -2,6 +2,7 @@
     // Assigned from construction <code>locals</code> options...
     $scope.parentScope = parentScope;
     $scope.selectedItem = selectedItem;
+    $scope.swiperActiveIndex = 0;
     $scope.scene;
     $scope.renderer;
     $scope.dae;
@@ -10,14 +11,15 @@
     $scope.init = function () {
 
         setTimeout(function () {
-            console.log("INDEX " + $scope.parentScope.shownItems);
-            console.log("INDEX " + $scope.selectedItem);
-            console.log("INDEX " + $scope.parentScope.shownItems.indexOf($scope.selectedItem));
             var galleryTop = new Swiper('.gallery-top', {
                 nextButton: '.swiper-button-next',
                 prevButton: '.swiper-button-prev',
                 spaceBetween: 10,
-                initialSlide: $scope.parentScope.shownItems.indexOf($scope.selectedItem)
+                initialSlide: $scope.parentScope.shownItems.indexOf($scope.selectedItem),
+                onSlideChangeEnd: function (swiperHere) {
+                    $scope.swiperActiveIndex = swiperHere.activeIndex;
+                    $scope.selectedItem = $scope.parentScope.shownItems[swiperHere.activeIndex];
+                }
             });
             var galleryThumbs = new Swiper('.gallery-thumbs', {
                 spaceBetween: 10,
@@ -35,7 +37,9 @@
         $scope.parentScope.itemModalController = $scope;
         if ($scope.selectedItem.model3D) {
             setTimeout(function () {
-                var container = document.getElementById('modalContainer');
+
+
+                var container = $(".swiper-slide")[$scope.swiperActiveIndex]
                 container.innerHTML = "";
                 var camera = new THREE.PerspectiveCamera(60, container.offsetWidth / container.offsetHeight, 1, 1000);
                 camera.up.set(0, 0, 1);
@@ -192,7 +196,7 @@
                 console.log(loader)
                 loader.load(
                     // resource URL
-                    $scope.parentScope.apiRootUrl + "/" + $scope.selectedItem.model3D,
+                    $scope.parentScope.apiRootUrl + "/static/"+ $scope.selectedItem.Id + "/" + $scope.selectedItem.model3D,
                     // Function when resource is loaded
                     function (collada) {
                         $scope.dae = collada.scene;
@@ -289,7 +293,7 @@
         var item = $scope.selectedItem;
         item.textures = [];
         angular.forEach($files, function (file, key) {
-            item.textures.push(file.name);
+            item.textures.push('/static/' + item.Id + '/' + getFileWithoutExtension(item.model3D) + '/' + file.name);
         });
 
         $scope.update();
@@ -297,7 +301,7 @@
             var fileReader = new FileReader();
             fileReader.onload = function (e) {
                 $upload.http({
-                    url: $rootScope.apiRootUrl + '/static/' + item.Id + '/maison/' + file.name,
+                    url: $rootScope.apiRootUrl + '/static/' + item.Id + '/' + getFileWithoutExtension(item.model3D) + '/' + file.name,
                     method: "PUT",
                     headers: { 'Content-Type': file.type },
                     data: e.target.result

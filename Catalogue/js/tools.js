@@ -26,6 +26,9 @@ function sortByDate(a, b) {
 function getFileExtension(filename) {
     return filename.split('.').pop();
 }
+function getFileWithoutExtension(filename) {
+    return filename.replace('.'+getFileExtension(filename), '');
+}
 
 // Fisher–Yates shuffle
 // http://bost.ocks.org/mike/shuffle/
