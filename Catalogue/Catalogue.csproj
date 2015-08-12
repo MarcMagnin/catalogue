@@ -704,6 +704,12 @@
     <Content Include="css\main.min.css">
       <DependentUpon>main.css</DependentUpon>
     </Content>
+    <Content Include="css\progress.css">
+      <DependentUpon>progress.less</DependentUpon>
+    </Content>
+    <Content Include="css\progress.min.css">
+      <DependentUpon>progress.css</DependentUpon>
+    </Content>
     <Content Include="css\ressources.css">
       <DependentUpon>ressources.less</DependentUpon>
     </Content>
@@ -2740,6 +2746,10 @@
     <Content Include="threejs\three.js-master\utils\servers\perl_server.sh" />
     <Content Include="threejs\three.js-master\utils\servers\python_server.sh" />
     <Content Include="threejs\three.js-master\utils\servers\ruby_server.sh" />
+    <Content Include="css\progress.less" />
+    <Content Include="css\progress.css.map">
+      <DependentUpon>progress.css</DependentUpon>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

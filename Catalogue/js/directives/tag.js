@@ -9,7 +9,7 @@ app.directive('tag', function ($http, $rootScope, $timeout) {
         },
         template:
             '<div>' +
-             ' <label class="control-label">{{fieldname}}</label>' +
+            // ' <label class="control-label">{{fieldname}}</label>' +
             '<div class="tags">' +
                 '<button class="tag-button repeat-item" ng-repeat="(idx, tag) in item[fieldname] track by $index" ng-click="remove(idx)">' +
         '{{tag}}' +

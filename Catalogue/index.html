@@ -17,6 +17,7 @@
     <link href="css/search.min.css" rel="stylesheet" />
     <link href="css/tags.min.css" rel="stylesheet" />
     <link href="css/swiper.min.css" rel="stylesheet" />
+    <link href="css/progress.min.css" rel="stylesheet" />
     <link href="bower_components/angular-material/modules/js/icon/icon.min.css" rel="stylesheet" />
     <link href="css/main.min.css" rel="stylesheet" />
 
@@ -46,6 +47,33 @@
                class="search" />
     </div>
 
+
+    <div class="progressIndicator">
+        <div class="wBall" id="wBall_1">
+            <div class="wInnerBall">
+            </div>
+        </div>
+        <div class="wBall" id="wBall_2">
+            <div class="wInnerBall">
+            </div>
+        </div>
+        <div class="wBall" id="wBall_3">
+            <div class="wInnerBall">
+            </div>
+        </div>
+        <div class="wBall" id="wBall_4">
+            <div class="wInnerBall">
+            </div>
+        </div>
+        <div class="wBall" id="wBall_5">
+            <div class="wInnerBall">
+            </div>
+        </div>
+    </div>
+
+
+
+
     <div id="Container" when-scrolled="loadMore()" class="tileContainer drop-box u-fancy-scrollbar"
          ng-file-drop ng-model="files"
          drag-over-class="dragover" multiple="true"
@@ -61,6 +89,8 @@
         </div>
     </div>
 
+
+    <script src="bower_components/greensock-js/src/minified/TweenMax.min.js"></script>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="js/jquery.mixitup.js"></script>
 

@@ -29,10 +29,7 @@
                     
                     <div class="swiper-wrapper drop-box" ng-file-drop ng-model="files" drag-over-class="dragover" multiple="false"
                          allow-dir="false" accept="*" ng-file-change="updateAttachment($files, $event, 'Image')">
-                        <div class="swiper-slide" ng-repeat="item in parentScope.shownItems" style="background-image:url({{::parentScope.apiRootUrl}}/static/{{item.Id}}/HI_{{item.Image}})">
-                            <tag class="tags-directive" item="item" entityname="'Item'" fieldname="'Tags'"></tag>
-                        </div>
-
+                        <div class="swiper-slide" ng-repeat="item in parentScope.shownItems" style="background-image:url({{::parentScope.apiRootUrl}}/static/{{item.Id}}/HI_{{item.Image}})"/>
                     </div>
                     <!-- Add Arrows -->
                     <div class="swiper-button-next swiper-button-white"></div>
@@ -40,7 +37,9 @@
                 </div>
                 <div class="swiper-container gallery-thumbs">
                     <div class="swiper-wrapper">
-                        <div class="swiper-slide" ng-repeat="item in parentScope.shownItems" style="background-image:url({{::parentScope.apiRootUrl}}/static/{{item.Id}}/HI_{{item.Image}})"></div>
+                        <div class="swiper-slide" ng-repeat="item in parentScope.shownItems" style="background-image:url({{::parentScope.apiRootUrl}}/static/{{item.Id}}/HI_{{item.Image}})">
+                            <tag class="tags-directive" item="item" entityname="'Item'" fieldname="'Tags'"></tag>
+                        </div>
                     </div>
                 </div>
 

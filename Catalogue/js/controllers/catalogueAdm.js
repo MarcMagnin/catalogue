@@ -29,7 +29,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
     $scope.init = function () {
         itemAdded = 0;
 
-
+        TweenMax.to(".progressIndicator", 0.2, { opacity: 1, display: "block" });
         itemService.get()
           .then(function (items) {
 
@@ -38,6 +38,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
 
               $scope.loadMore();
               filterCallback();
+              TweenMax.to(".progressIndicator", 0.2, { opacity: 0, display: "none" });
           })
     };
 

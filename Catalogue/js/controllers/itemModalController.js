@@ -6,20 +6,26 @@
     $scope.scene;
     $scope.renderer;
     $scope.dae;
+    $scope.container3D;
+    $scope.webGLRendererLoaded = false;
     // Texture CORS problem : http://stackoverflow.com/questions/30853339/three-js-collada-textures-not-loading
 
     $scope.init = function () {
-
+        var currentItem = $scope.parentScope.shownItems.indexOf($scope.selectedItem);
         setTimeout(function () {
             var galleryTop = new Swiper('.gallery-top', {
                 nextButton: '.swiper-button-next',
                 prevButton: '.swiper-button-prev',
                 spaceBetween: 10,
-                initialSlide: $scope.parentScope.shownItems.indexOf($scope.selectedItem),
-                onSlideChangeEnd: function (swiperHere) {
-                    $scope.swiperActiveIndex = swiperHere.activeIndex;
-                    $scope.selectedItem = $scope.parentScope.shownItems[swiperHere.activeIndex];
-                }
+                initialSlide: currentItem,
+                onSlideChangeEnd: function (swiper) {
+                    $scope.check3dSceneToLoad(swiper);
+                },
+                preloadImages: false,
+                lazyLoading: true,
+                //onInit: function (swiper) {
+                //    $scope.check3dSceneToLoad(swiper);
+                //}
             });
             var galleryThumbs = new Swiper('.gallery-thumbs', {
                 spaceBetween: 10,
@@ -27,21 +33,80 @@
                 slidesPerView: 'auto',
                 touchRatio: 0.2,
                 slideToClickedSlide: true,
-                initialSlide: $scope.parentScope.shownItems.indexOf($scope.selectedItem)
+                initialSlide: $scope.parentScope.shownItems.indexOf($scope.selectedItem),
+                //simulateTouch: false,
+                noSwiping: true,
+                //onlyExternal: true,
+                preloadImages: false,
+                lazyLoading: true,
             });
             galleryTop.params.control = galleryThumbs;
             galleryThumbs.params.control = galleryTop;
-            console.log(galleryTop);
-        }, 300);
+        }, 200);
 
         $scope.parentScope.itemModalController = $scope;
+       
+
+    }
+    $scope.check3dSceneToLoad = function (swiper) {
+        $scope.swiperActiveIndex = swiper.activeIndex;
+        $scope.selectedItem = $scope.parentScope.shownItems[swiper.activeIndex];
         if ($scope.selectedItem.model3D) {
+            $scope.load3dScene();
+            //$scope.galleryTop.params.simulateTouch = false;
+            swiper.params.onlyExternal = true
+        } else {
+            if ($scope.scene) {
+                $scope.unload3dScene();
+                //$scope.galleryTop.params.simulateTouch = true;
+                swiper.params.onlyExternal = false;
+            }
+        }
+    }
+    $scope.unload3dScene = function () {
+        console.log("cleanup 3D");
+        console.log($scope.scene);
+       // $scope.scene.remove($scope.dae);
+        $.each($scope.scene.children, function (idx, obj) {
+            console.log("remove obj from scene")
+            $scope.scene.remove(obj);
+            if (obj) {
+                if (obj.geometry) {
+                    obj.geometry.dispose();
+                    console.log("dispose obj from scene")
+                }
+                if (obj.material) {
+                    if (obj.material instanceof THREE.MeshFaceMaterial) {
+                        $.each(obj.material.materials, function (idx, obj) {
+                            obj.dispose();
+                            console.log("dispose obj from scene")
+                        });
+                    } else {
+                        obj.material.dispose();
+                        console.log("dispose obj from scene")
+                    }
+                }
+                if (obj.dispose) {
+                    console.log("dispose obj from scene")
+                    obj.dispose();
+                }
+            }
+           
+        });
+        // clean up
+        $scope.container3D.innerHTML = "";
+        $scope.renderer.domElement = null;
+    }
+    $scope.load3dScene = function () {
+        TweenMax.to(".progressIndicator", 0.2, { opacity: 1, display: "block" });
+       
+
             setTimeout(function () {
 
 
-                var container = $(".swiper-slide")[$scope.swiperActiveIndex]
-                container.innerHTML = "";
-                var camera = new THREE.PerspectiveCamera(60, container.offsetWidth / container.offsetHeight, 1, 1000);
+                $scope.container3D = $(".swiper-slide")[$scope.swiperActiveIndex]
+//                $scope.container3D.innerHTML = "";
+                var camera = new THREE.PerspectiveCamera(50, $scope.container3D.offsetWidth / $scope.container3D.offsetHeight, 1, 1000);
                 camera.up.set(0, 0, 1);
                 camera.position.x = -30;
                 camera.position.y = -15;
@@ -49,7 +114,7 @@
 
 
 
-                var controls = new THREE.OrbitControls(camera, container);
+                var controls = new THREE.OrbitControls(camera, $scope.container3D);
                 controls.addEventListener('change', render);
 
 
@@ -101,61 +166,61 @@
                 $scope.scene.add(spotLight);
 
                 /*adds controls to scene*/
-                datGUI = new dat.GUI({ autoPlace: true });
-                datGUI.domElement.id = 'datGUI';
-                var customContainer = $('.modalContainerDrop').append($(datGUI.domElement));
+                //datGUI = new dat.GUI({ autoPlace: true });
+                //datGUI.domElement.id = 'datGUI';
+                //var customContainer = $('.modalContainerDrop').append($(datGUI.domElement));
 
-                datGUI.add(guiControls, 'lightX', -180, 180).onChange(function (value, event) {
-                    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
-                    spotLight.shadowCamera.updateProjectionMatrix();
-                });
-                datGUI.add(guiControls, 'lightY', -180, 180).onChange(function (value) {
-                    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
-                    spotLight.shadowCamera.updateProjectionMatrix();
-                });
-                datGUI.add(guiControls, 'lightZ', -180, 180).onChange(function (value) {
-                    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
-                    spotLight.shadowCamera.updateProjectionMatrix();
-                });
+                //datGUI.add(guiControls, 'lightX', -180, 180).onChange(function (value, event) {
+                //    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
+                //    spotLight.shadowCamera.updateProjectionMatrix();
+                //});
+                //datGUI.add(guiControls, 'lightY', -180, 180).onChange(function (value) {
+                //    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
+                //    spotLight.shadowCamera.updateProjectionMatrix();
+                //});
+                //datGUI.add(guiControls, 'lightZ', -180, 180).onChange(function (value) {
+                //    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
+                //    spotLight.shadowCamera.updateProjectionMatrix();
+                //});
 
-                datGUI.add(guiControls, 'intensity', 0.01, 5).onChange(function (value) {
-                    spotLight.intensity = value;
-                });
+                //datGUI.add(guiControls, 'intensity', 0.01, 5).onChange(function (value) {
+                //    spotLight.intensity = value;
+                //});
 
-                datGUI.add(guiControls, 'distance', 0, 1000).onChange(function (value) {
-                    spotLight.distance = value;
-                });
-                datGUI.add(guiControls, 'angle', 0.001, 1.570).onChange(function (value) {
-                    spotLight.angle = value;
-                });
-                datGUI.add(guiControls, 'exponent', 0, 50).onChange(function (value) {
-                    spotLight.exponent = value;
-                });
-                datGUI.add(guiControls, 'shadowCameraNear', 0, 100).name("Near").onChange(function (value) {
-                    spotLight.shadowCamera.near = value;
-                    spotLight.shadowCamera.updateProjectionMatrix();
-                });
-                datGUI.add(guiControls, 'shadowCameraFar', 0, 5000).name("Far").onChange(function (value) {
-                    spotLight.shadowCamera.far = value;
-                    spotLight.shadowCamera.updateProjectionMatrix();
-                });
-                datGUI.add(guiControls, 'shadowCameraFov', 1, 180).name("Fov").onChange(function (value) {
-                    spotLight.shadowCamera.fov = value;
-                    spotLight.shadowCamera.updateProjectionMatrix();
-                });
-                datGUI.add(guiControls, 'shadowCameraVisible').onChange(function (value) {
-                    spotLight.shadowCameraVisible = value;
-                    spotLight.shadowCamera.updateProjectionMatrix();
-                });
-                datGUI.add(guiControls, 'shadowBias', 0, 1).onChange(function (value) {
-                    spotLight.shadowBias = value;
-                    spotLight.shadowCamera.updateProjectionMatrix();
-                });
-                datGUI.add(guiControls, 'shadowDarkness', 0, 1).onChange(function (value) {
-                    spotLight.shadowDarkness = value;
-                    spotLight.shadowCamera.updateProjectionMatrix();
-                });
-                datGUI.close();
+                //datGUI.add(guiControls, 'distance', 0, 1000).onChange(function (value) {
+                //    spotLight.distance = value;
+                //});
+                //datGUI.add(guiControls, 'angle', 0.001, 1.570).onChange(function (value) {
+                //    spotLight.angle = value;
+                //});
+                //datGUI.add(guiControls, 'exponent', 0, 50).onChange(function (value) {
+                //    spotLight.exponent = value;
+                //});
+                //datGUI.add(guiControls, 'shadowCameraNear', 0, 100).name("Near").onChange(function (value) {
+                //    spotLight.shadowCamera.near = value;
+                //    spotLight.shadowCamera.updateProjectionMatrix();
+                //});
+                //datGUI.add(guiControls, 'shadowCameraFar', 0, 5000).name("Far").onChange(function (value) {
+                //    spotLight.shadowCamera.far = value;
+                //    spotLight.shadowCamera.updateProjectionMatrix();
+                //});
+                //datGUI.add(guiControls, 'shadowCameraFov', 1, 180).name("Fov").onChange(function (value) {
+                //    spotLight.shadowCamera.fov = value;
+                //    spotLight.shadowCamera.updateProjectionMatrix();
+                //});
+                //datGUI.add(guiControls, 'shadowCameraVisible').onChange(function (value) {
+                //    spotLight.shadowCameraVisible = value;
+                //    spotLight.shadowCamera.updateProjectionMatrix();
+                //});
+                //datGUI.add(guiControls, 'shadowBias', 0, 1).onChange(function (value) {
+                //    spotLight.shadowBias = value;
+                //    spotLight.shadowCamera.updateProjectionMatrix();
+                //});
+                //datGUI.add(guiControls, 'shadowDarkness', 0, 1).onChange(function (value) {
+                //    spotLight.shadowDarkness = value;
+                //    spotLight.shadowCamera.updateProjectionMatrix();
+                //});
+                //datGUI.close();
 
 
                 light = new THREE.AmbientLight(0x222222);
@@ -166,7 +231,7 @@
 
 
                 $scope.renderer = new THREE.WebGLRenderer({ antialias: true });
-                $scope.renderer.setSize(container.offsetWidth, container.offsetHeight);
+                $scope.renderer.setSize($scope.container3D.offsetWidth, $scope.container3D.offsetHeight);
                 $scope.renderer.setPixelRatio(window.devicePixelRatio);
                 $scope.renderer.shadowMapEnabled = true;
                 $scope.renderer.shadowMapType = THREE.PCFSoftShadowMap;
@@ -174,13 +239,11 @@
                 //$scope.renderer.shadowMapSoft = true;
 
 
-                container.appendChild($scope.renderer.domElement);
+                $scope.container3D.appendChild($scope.renderer.domElement);
 
 
                 function render() {
                     $scope.renderer.render($scope.scene, camera);
-
-
                 }
 
                 function animate() {
@@ -196,7 +259,7 @@
                 console.log(loader)
                 loader.load(
                     // resource URL
-                    $scope.parentScope.apiRootUrl + "/static/"+ $scope.selectedItem.Id + "/" + $scope.selectedItem.model3D,
+                    $scope.parentScope.apiRootUrl + "/static/" + $scope.selectedItem.Id + "/" + $scope.selectedItem.model3D,
                     // Function when resource is loaded
                     function (collada) {
                         $scope.dae = collada.scene;
@@ -211,7 +274,12 @@
                         $scope.scene.add($scope.dae);
 
                         render();
-                        animate()
+                        if ($scope.webGLRendererLoaded == false) {
+                            animate();
+                            $scope.webGLRendererLoaded = true;
+                        }
+                        
+                        TweenMax.to(".progressIndicator", 0.2, { opacity: 0, display: "none" });
                     },
                     // Function called when download progresses
                     function (xhr) {
@@ -224,16 +292,12 @@
 
 
 
-
-
-                animate();
-
                 function onWindowResize() {
 
-                    camera.aspect = container.offsetWidth / container.offsetHeight;
+                    camera.aspect = $scope.container3D.offsetWidth / $scope.container3D.offsetHeight;
                     camera.updateProjectionMatrix();
 
-                    $scope.renderer.setSize(container.offsetWidth, container.offsetHeight);
+                    $scope.renderer.setSize($scope.container3D.offsetWidth, $scope.container3D.offsetHeight);
 
                     render();
 
@@ -256,14 +320,11 @@
             //        scene.add(object);
             //    }
             //);
-
-
-
-        }
-
     }
+
     $scope.onCloseDialog = function () {
         $scope.scene.remove($scope.dae);
+        window.removeEventListener('resize', onWindowResize);
     };
 
     $scope.closeDialog = function () {

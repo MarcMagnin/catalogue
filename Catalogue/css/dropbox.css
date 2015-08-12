@@ -48,8 +48,8 @@
 .textures-drop-box {
   position: absolute;
   z-index: 500;
-  top: 5px;
-  right: 5px;
+  top: 55px;
+  right: 15px;
   height: 35px;
   width: 35px;
   min-height: 35px;
