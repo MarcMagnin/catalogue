@@ -2,7 +2,7 @@
     // Assigned from construction <code>locals</code> options...
     $scope.parentScope = parentScope;
     $scope.selectedItem = selectedItem;
-    $scope.swiperActiveIndex = 0;
+    $scope.swiperActiveIndex = -1;
     $scope.scene;
     $scope.renderer;
     $scope.dae;
@@ -23,9 +23,9 @@
                 },
                 preloadImages: false,
                 lazyLoading: true,
-                //onInit: function (swiper) {
-                //    $scope.check3dSceneToLoad(swiper);
-                //}
+                onInit: function (swiper) {
+                    $scope.check3dSceneToLoad(swiper);
+                }
             });
             var galleryThumbs = new Swiper('.gallery-thumbs', {
                 spaceBetween: 10,
@@ -48,7 +48,10 @@
        
 
     }
+
     $scope.check3dSceneToLoad = function (swiper) {
+        if ($scope.swiperActiveIndex == swiper.activeIndex)
+            return;
         $scope.swiperActiveIndex = swiper.activeIndex;
         $scope.selectedItem = $scope.parentScope.shownItems[swiper.activeIndex];
         $scope.unload3dScene();

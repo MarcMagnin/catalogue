@@ -679,6 +679,12 @@
     <Content Include="css\canvas.min.css">
       <DependentUpon>canvas.css</DependentUpon>
     </Content>
+    <Content Include="css\datGUI.css">
+      <DependentUpon>datGUI.less</DependentUpon>
+    </Content>
+    <Content Include="css\datGUI.min.css">
+      <DependentUpon>datGUI.css</DependentUpon>
+    </Content>
     <Content Include="css\dialog.css">
       <DependentUpon>dialog.less</DependentUpon>
     </Content>
@@ -2749,6 +2755,10 @@
     <Content Include="css\progress.less" />
     <Content Include="css\progress.css.map">
       <DependentUpon>progress.css</DependentUpon>
+    </Content>
+    <Content Include="css\datGUI.less" />
+    <Content Include="css\datGUI.css.map">
+      <DependentUpon>datGUI.css</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
