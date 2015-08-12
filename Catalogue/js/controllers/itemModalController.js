@@ -388,10 +388,10 @@
             return;
         var file = $files[0];
         var extension = getFileExtension(file.name);
-        if (extension != "jpg" || extension != "jpeg" || extension != "png") {
-            fieldName = "model3D";
+        if (extension != "dae") {
+            return;
         }
-
+        fieldName = "model3D";
         $scope.parentScope.removeAttachment(item, fieldName);
         var fileReader = new FileReader();
         fileReader.onload = function (e) {
