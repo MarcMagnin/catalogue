@@ -23,9 +23,9 @@
                 },
                 preloadImages: false,
                 lazyLoading: true,
-                onInit: function (swiper) {
-                    $scope.check3dSceneToLoad(swiper);
-                }
+                //onInit: function (swiper) {
+                //    $scope.check3dSceneToLoad(swiper);
+                //}
             });
             var galleryThumbs = new Swiper('.gallery-thumbs', {
                 spaceBetween: 10,
@@ -42,7 +42,7 @@
             });
             galleryTop.params.control = galleryThumbs;
             galleryThumbs.params.control = galleryTop;
-        }, 200);
+        }, 300);
 
         $scope.parentScope.itemModalController = $scope;
        
