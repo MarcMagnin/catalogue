@@ -29,7 +29,7 @@
                     
                     <div class="swiper-wrapper drop-box" ng-file-drop ng-model="files" drag-over-class="dragover" multiple="false"
                          allow-dir="false" accept="*" ng-file-change="updateAttachment($files, $event, 'Image')">
-                        <div class="swiper-slide" ng-repeat="item in parentScope.shownItems" style="background-image:url({{::parentScope.apiRootUrl}}/static/{{item.Id}}/HI_{{item.Image}})"/>
+                        <div class="swiper-slide" ng-repeat="item in parentScope.shownItems" style="background-image:url({{::parentScope.apiRootUrl}}/static/{{item.Id}}/HI_{{item.Image}})" />
                     </div>
                     <!-- Add Arrows -->
                     <div class="swiper-button-next swiper-button-white"></div>

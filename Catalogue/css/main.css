@@ -27,15 +27,4 @@ body {
 md-icon {
   margin: 0;
 }
-#datGUI {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-}
-.dg.a {
-  overflow-x: visible !important;
-}
-.dg.a > ul {
-  margin-top: 30px;
-}
 /*# sourceMappingURL=main.css.map */

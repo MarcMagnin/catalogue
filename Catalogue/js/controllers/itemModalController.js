@@ -23,9 +23,9 @@
                 },
                 preloadImages: false,
                 lazyLoading: true,
-                //onInit: function (swiper) {
-                //    $scope.check3dSceneToLoad(swiper);
-                //}
+                onInit: function (swiper) {
+                    $scope.check3dSceneToLoad(swiper);
+                }
             });
             var galleryThumbs = new Swiper('.gallery-thumbs', {
                 spaceBetween: 10,
@@ -51,21 +51,26 @@
     $scope.check3dSceneToLoad = function (swiper) {
         $scope.swiperActiveIndex = swiper.activeIndex;
         $scope.selectedItem = $scope.parentScope.shownItems[swiper.activeIndex];
+        $scope.unload3dScene();
         if ($scope.selectedItem.model3D) {
             $scope.load3dScene();
             //$scope.galleryTop.params.simulateTouch = false;
             swiper.params.onlyExternal = true
         } else {
-            if ($scope.scene) {
-                $scope.unload3dScene();
-                //$scope.galleryTop.params.simulateTouch = true;
-                swiper.params.onlyExternal = false;
-            }
+            //$scope.galleryTop.params.simulateTouch = true;
+            swiper.params.onlyExternal = false;
         }
     }
     $scope.unload3dScene = function () {
         console.log("cleanup 3D");
         console.log($scope.scene);
+        var GUI = $("#datGUI")[0];
+        if (GUI != null) {
+            GUI.parentNode.removeChild(GUI);
+        }
+        if (!$scope.scene) {
+            return;
+        }
        // $scope.scene.remove($scope.dae);
         $.each($scope.scene.children, function (idx, obj) {
             console.log("remove obj from scene")
@@ -133,7 +138,7 @@
                     this.lightX = -50;
                     this.lightY = -60;
                     this.lightZ = 90;
-                    this.intensity = 1.4;
+                    this.intensity = 0.8;
                     this.distance = 1000;
                     this.angle = 1.6;
                     this.exponent = 1;
@@ -147,6 +152,10 @@
                     this.shadowDarkness = 0.5;
 
                 }
+
+                var light = new THREE.AmbientLight(0xC2C2C2);
+                $scope.scene.add(light);
+
                 /*adds spot light with starting parameters*/
                 spotLight = new THREE.SpotLight(0xffffff);
                 spotLight.castShadow = true;
@@ -166,75 +175,72 @@
                 $scope.scene.add(spotLight);
 
                 /*adds controls to scene*/
-                //datGUI = new dat.GUI({ autoPlace: true });
-                //datGUI.domElement.id = 'datGUI';
-                //var customContainer = $('.modalContainerDrop').append($(datGUI.domElement));
+                datGUI = new dat.GUI({ autoPlace: true });
+                datGUI.domElement.id = 'datGUI';
+                var customContainer = $('.gallery-top').append($(datGUI.domElement));
 
-                //datGUI.add(guiControls, 'lightX', -180, 180).onChange(function (value, event) {
-                //    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
-                //    spotLight.shadowCamera.updateProjectionMatrix();
-                //});
-                //datGUI.add(guiControls, 'lightY', -180, 180).onChange(function (value) {
-                //    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
-                //    spotLight.shadowCamera.updateProjectionMatrix();
-                //});
-                //datGUI.add(guiControls, 'lightZ', -180, 180).onChange(function (value) {
-                //    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
-                //    spotLight.shadowCamera.updateProjectionMatrix();
-                //});
+                datGUI.add(guiControls, 'lightX', -180, 180).onChange(function (value, event) {
+                    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.add(guiControls, 'lightY', -180, 180).onChange(function (value) {
+                    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.add(guiControls, 'lightZ', -180, 180).onChange(function (value) {
+                    spotLight.position.set(guiControls.lightX, guiControls.lightY, guiControls.lightZ);
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
 
-                //datGUI.add(guiControls, 'intensity', 0.01, 5).onChange(function (value) {
-                //    spotLight.intensity = value;
-                //});
+                datGUI.add(guiControls, 'intensity', 0.01, 5).onChange(function (value) {
+                    spotLight.intensity = value;
+                });
 
-                //datGUI.add(guiControls, 'distance', 0, 1000).onChange(function (value) {
-                //    spotLight.distance = value;
-                //});
-                //datGUI.add(guiControls, 'angle', 0.001, 1.570).onChange(function (value) {
-                //    spotLight.angle = value;
-                //});
-                //datGUI.add(guiControls, 'exponent', 0, 50).onChange(function (value) {
-                //    spotLight.exponent = value;
-                //});
-                //datGUI.add(guiControls, 'shadowCameraNear', 0, 100).name("Near").onChange(function (value) {
-                //    spotLight.shadowCamera.near = value;
-                //    spotLight.shadowCamera.updateProjectionMatrix();
-                //});
-                //datGUI.add(guiControls, 'shadowCameraFar', 0, 5000).name("Far").onChange(function (value) {
-                //    spotLight.shadowCamera.far = value;
-                //    spotLight.shadowCamera.updateProjectionMatrix();
-                //});
-                //datGUI.add(guiControls, 'shadowCameraFov', 1, 180).name("Fov").onChange(function (value) {
-                //    spotLight.shadowCamera.fov = value;
-                //    spotLight.shadowCamera.updateProjectionMatrix();
-                //});
-                //datGUI.add(guiControls, 'shadowCameraVisible').onChange(function (value) {
-                //    spotLight.shadowCameraVisible = value;
-                //    spotLight.shadowCamera.updateProjectionMatrix();
-                //});
-                //datGUI.add(guiControls, 'shadowBias', 0, 1).onChange(function (value) {
-                //    spotLight.shadowBias = value;
-                //    spotLight.shadowCamera.updateProjectionMatrix();
-                //});
-                //datGUI.add(guiControls, 'shadowDarkness', 0, 1).onChange(function (value) {
-                //    spotLight.shadowDarkness = value;
-                //    spotLight.shadowCamera.updateProjectionMatrix();
-                //});
-                //datGUI.close();
-
-
-                light = new THREE.AmbientLight(0x222222);
-                $scope.scene.add(light);
-                light = new THREE.HemisphereLight(0x222222);
-                light.intensity = 0.6;
-                $scope.scene.add(light);
+                datGUI.add(guiControls, 'distance', 0, 1000).onChange(function (value) {
+                    spotLight.distance = value;
+                });
+                datGUI.add(guiControls, 'angle', 0.001, 1.570).onChange(function (value) {
+                    spotLight.angle = value;
+                });
+                datGUI.add(guiControls, 'exponent', 0, 50).onChange(function (value) {
+                    spotLight.exponent = value;
+                });
+                datGUI.add(guiControls, 'shadowCameraNear', 0, 100).name("Near").onChange(function (value) {
+                    spotLight.shadowCamera.near = value;
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.add(guiControls, 'shadowCameraFar', 0, 5000).name("Far").onChange(function (value) {
+                    spotLight.shadowCamera.far = value;
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.add(guiControls, 'shadowCameraFov', 1, 180).name("Fov").onChange(function (value) {
+                    spotLight.shadowCamera.fov = value;
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.add(guiControls, 'shadowCameraVisible').onChange(function (value) {
+                    spotLight.shadowCameraVisible = value;
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.add(guiControls, 'shadowBias', 0, 1).onChange(function (value) {
+                    spotLight.shadowBias = value;
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.add(guiControls, 'shadowDarkness', 0, 1).onChange(function (value) {
+                    spotLight.shadowDarkness = value;
+                    spotLight.shadowCamera.updateProjectionMatrix();
+                });
+                datGUI.close();
 
 
-                $scope.renderer = new THREE.WebGLRenderer({ antialias: true });
+        
+
+
+                $scope.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
                 $scope.renderer.setSize($scope.container3D.offsetWidth, $scope.container3D.offsetHeight);
                 $scope.renderer.setPixelRatio(window.devicePixelRatio);
                 $scope.renderer.shadowMapEnabled = true;
                 $scope.renderer.shadowMapType = THREE.PCFSoftShadowMap;
+                $scope.renderer.setClearColor(0x69D9FF, 1);
                 //$scope.renderer.shadowMapDarkness = 0.5;
                 //$scope.renderer.shadowMapSoft = true;
 
