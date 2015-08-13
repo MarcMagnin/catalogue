@@ -117,7 +117,7 @@
 
 
                 $scope.container3D = $(".swiper-slide")[$scope.swiperActiveIndex]
-//                $scope.container3D.innerHTML = "";
+                $scope.container3D.innerHTML = "";
                 var camera = new THREE.PerspectiveCamera(50, $scope.container3D.offsetWidth / $scope.container3D.offsetHeight, 1, 1000);
                 camera.up.set(0, 0, 1);
                 camera.position.x = -30;
