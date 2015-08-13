@@ -80,13 +80,13 @@
          drag-over-class="dragover" multiple="true"
          allow-dir="false" accept="*"
          ng-file-change="addByDragAndDrop($files, $event)">
-        <div class="mix tile {{item.filter}}" ng-repeat="item in items" ng-click="select(item, $event)">
+        <div class="mix tile {{::item.filter}}" ng-repeat="item in items" ng-click="select(item, $event)">
             <button class="delete-button" ng-click="delete(item, $event)">
                 <md-icon class="md-icon" md-svg-src="images/close.svg"></md-icon>
             </button>
 
             <ng-md-icon ng-hide="item.Image" class="image-placehoder" icon="image" size="88"></ng-md-icon>
-            <img ng-show="item.Image" ng-src="{{::apiRootUrl}}/static/{{item.Id}}/{{item.Image}}" class="tile-image"></img>
+            <img ng-show="item.Image" ng-src="{{::item.imageUrl}}" class="tile-image"></img>
         </div>
     </div>
 
@@ -128,6 +128,7 @@
     <script src="js/filters/filters.js"></script>
     <script src="js/directives/tag.js"></script>
     <script src="js/directives/infinitScroll.js"></script>
+    <script src="js/directives/imageOnLoad.js"></script>
     <script src="js/services/services.js"></script>
     <script src="js/controllers/catalogueAdm.js"></script>
     <script src="js/controllers/itemModalController.js"></script>

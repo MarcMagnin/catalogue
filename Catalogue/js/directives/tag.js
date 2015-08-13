@@ -1,5 +1,5 @@
 ﻿
-app.directive('tag', function ($http, $rootScope, $timeout) {
+app.directive('tag', function ($http, $rootScope) {
     return {
         restrict: 'E',
         scope: {
@@ -30,8 +30,9 @@ app.directive('tag', function ($http, $rootScope, $timeout) {
         link: function ($scope, $element, $attrs, $modelCtrl) {
             // FIXME: this is lazy and error-prone
             //var input = angular.element($element.children()[1]);
+            console.log($scope)
             var input = $($element).first("input");
-            var test = input.controller().$viewValue;
+            //var test = input.controller().$viewValue;
             // This adds the new tag to the tags array
             $scope.add = function () {
                 if (!$scope.new_value)

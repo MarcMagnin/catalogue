@@ -751,6 +751,7 @@
     <Content Include="ItemModal.tmpl.html" />
     <Content Include="js\app.js" />
     <Content Include="js\controllers\catalogueAdm.js" />
+    <Content Include="js\directives\imageOnLoad.js" />
     <Content Include="js\directives\tag.js" />
     <Content Include="js\filters\filters.js" />
     <Content Include="js\hammer.js" />

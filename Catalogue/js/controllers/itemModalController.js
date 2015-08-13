@@ -18,6 +18,7 @@
                 prevButton: '.swiper-button-prev',
                 spaceBetween: 10,
                 initialSlide: currentItem,
+                watchSlidesVisibility: true,
                 onSlideChangeEnd: function (swiper) {
                     $scope.check3dSceneToLoad(swiper);
                 },
@@ -25,12 +26,14 @@
                 lazyLoading: true,
                 onInit: function (swiper) {
                     $scope.check3dSceneToLoad(swiper);
-                }
+                },
             });
             var galleryThumbs = new Swiper('.gallery-thumbs', {
                 spaceBetween: 10,
                 centeredSlides: true,
-                slidesPerView: 'auto',
+                slidesPerView: 4,
+                watchSlidesProgress: true,
+                watchSlidesVisibility: true,
                 touchRatio: 0.2,
                 slideToClickedSlide: true,
                 initialSlide: $scope.parentScope.shownItems.indexOf($scope.selectedItem),
@@ -39,6 +42,7 @@
                 //onlyExternal: true,
                 preloadImages: false,
                 lazyLoading: true,
+                lazyLoadingInPrevNext:true, 
             });
             galleryTop.params.control = galleryThumbs;
             galleryThumbs.params.control = galleryTop;
