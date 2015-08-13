@@ -46,7 +46,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
         for (var i = 0; i < items.length; i++) {
             items[i].filter = "";
             items[i].hiImageUrl = $rootScope.apiRootUrl + "/static/" + items[i].Id + "/HI_" + items[i].Image;
-            items[i].imageUrl = $rootScope.apiRootUrl + "/static/" + items[i].Id + "/" + items[i].Image;
+            items[i].imageUrl  = $rootScope.apiRootUrl + "/static/" + items[i].Id + "/" + items[i].Image;
 
             items[i].Id = items[i]['@metadata']['@id'];
             if (items[i].Auteurs) {
