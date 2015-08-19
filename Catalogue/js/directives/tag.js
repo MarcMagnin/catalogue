@@ -11,17 +11,18 @@ app.directive('tag', function ($http, $rootScope) {
             '<div>' +
             // ' <label class="control-label">{{fieldname}}</label>' +
             '<div class="tags">' +
+            '<form name="myForm" ng-sumit="myForm.$valid && submit()"><input name="myInput" type="text" ' +
+    'ng-model="new_value"' +
+    'typeahead="tags.Val for tags in getData($viewValue) | filter:$viewValue" ' +
+    'typeahead-loading="loading" ' +
+    'typeahead-focus-first="false" ' +
+    'typeahead-editable="true" ' +
+    'typeahead-on-select="onSelect($item, $model, $label); asyncSelected = \'\'" ' +
+    'class="input"></input></form>' +
                 '<button class="tag-button repeat-item" ng-repeat="(idx, tag) in item[fieldname] track by $index" ng-click="remove(idx)">' +
         '{{tag}}' +
         '<md-icon class="md-icon tag-remove-icon" md-svg-src="images/close.svg"></md-icon>' +
-'</button><form name="myForm" ng-submit="myForm.$valid && submit()"><input name="myInput" type="text" ' +
-                'ng-model="new_value"' +
-                'typeahead="tags.Val for tags in getData($viewValue) | filter:$viewValue" ' +
-                'typeahead-loading="loading" ' +
-                'typeahead-focus-first="false" ' +
-                'typeahead-editable="true" ' +
-                'typeahead-on-select="onSelect($item, $model, $label); asyncSelected = \'\'" ' +
-                'class="input"></input></form>' +
+'</button>'+
             '</div>' +
             '</div>',
         //'<i ng-show="loading" class="glyphicon glyphicon-refresh"></i> ' +
@@ -120,14 +121,14 @@ app.directive('tag', function ($http, $rootScope) {
             //});
             input.bind('keyup', function (event) {
                 // But we only care when Enter was pressed
+                
                 if (event.keyCode == 13) {
                     // There's probably a better way to handle this...
                     event.preventDefault();
                     //setTimeout(function(){
                     //    $('.input').blur();
                     //},1000)
-
-                    $scope.$apply();
+                    $scope.submit();
                 }
 
             });

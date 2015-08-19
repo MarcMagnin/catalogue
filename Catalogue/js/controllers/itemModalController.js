@@ -22,10 +22,25 @@
                 onSlideChangeEnd: function (swiper) {
                     $scope.check3dSceneToLoad(swiper);
                 },
+                onSlideChangeStart:function(){
+                    $('.swiper-slide-next img').each(function () {
+                        $(this).attr('src', $(this).attr('data-src'))
+                    })
+                    $('.swiper-slide-prev img').each(function () {
+                        $(this).attr('src', $(this).data('data-src'))
+                    })
+                },
                 preloadImages: false,
                 lazyLoading: true,
+                
                 onInit: function (swiper) {
                     $scope.check3dSceneToLoad(swiper);
+                    $('.swiper-slide-next img').each(function () {
+                        $(this).attr('src', $(this).attr('data-src'))
+                    })
+                    $('.swiper-slide-prev img').each(function () {
+                        $(this).attr('src', $(this).data('data-src'))
+                    })
                 },
             });
             var galleryThumbs = new Swiper('.gallery-thumbs', {
@@ -42,7 +57,7 @@
                 //onlyExternal: true,
                 preloadImages: false,
                 lazyLoading: true,
-                lazyLoadingInPrevNext:true, 
+                lazyLoadingInPrevNext: true,
             });
             galleryTop.params.control = galleryThumbs;
             galleryThumbs.params.control = galleryTop;

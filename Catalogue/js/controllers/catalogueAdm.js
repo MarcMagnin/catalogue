@@ -1,8 +1,9 @@
 ﻿
-var Item = function () {
+var Item = function Item () {
     this.Auteurs = [];
     this.Tags = [];
     this.Image = "";
+    toJSON = function(){ return this.name };
 };
 
 var Update = function () {
@@ -11,8 +12,8 @@ var Update = function () {
 };
 
 app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q, itemService, $filter, $mdDialog, $upload) {
-    $rootScope.apiRootUrl = "http://62.23.104.30/databases/catalogueMaison";
-    //$rootScope.apiRootUrl = "http://localhost:8088/databases/catalogueMaison";
+    //$rootScope.apiRootUrl = "http://62.23.104.30/databases/catalogueMaison";
+    $rootScope.apiRootUrl = "http://localhost:8088/databases/catalogueMaison";
 
     $scope.entityName = "Item"
     $scope.itemsPool = [];
@@ -44,19 +45,21 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
 
     $scope.prepareFilters = function (items) {
         for (var i = 0; i < items.length; i++) {
-            items[i].filter = "";
-            items[i].hiImageUrl = $rootScope.apiRootUrl + "/static/" + items[i].Id + "/HI_" + items[i].Image;
-            items[i].imageUrl  = $rootScope.apiRootUrl + "/static/" + items[i].Id + "/" + items[i].Image;
-
+            items[i].$$filter = "";
             items[i].Id = items[i]['@metadata']['@id'];
+            items[i].$$hiImageUrl = $rootScope.apiRootUrl + "/static/" + items[i].Id + "/HI_" + items[i].Image;
+            items[i].$$imageUrl = $rootScope.apiRootUrl + "/static/" + items[i].Id + "/" + items[i].Image;
+
+          
+            
             if (items[i].Auteurs) {
-                items[i].filter += items[i].Auteurs.map(function (val) {
+                items[i].$$filter += items[i].Auteurs.map(function (val) {
                     return tokenizeString(val);
                 }).join(' ');
             }
 
             if (items[i].Tags) {
-                items[i].filter += " " + items[i].Tags.map(function (val) {
+                items[i].$$filter += " " + items[i].Tags.map(function (val) {
                     return tokenizeString(val);
                 }).join(' ');
             }
@@ -171,6 +174,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
             prom.push(defer.promise);
             $scope.addItem(item).success(function (data, status, headers, config) {
                 item.Id = data.Key;
+               
                 $timeout(function () {
                     $scope.items.unshift(item);
                     $scope.$apply();
@@ -192,7 +196,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
                     }).success(function (data, status, headers, config) {
                         // mise à jour du livre avec l'URI de l'image
                         $scope.setAttachment(fileBlob.name, item, 'Image');
-
+                        console.log(item.Id)
                         var fileReader = new FileReader();
                         fileReader.onload = function (e) {
                             // upload hi resolution

@@ -55,5 +55,9 @@
   position: absolute;
   left: 50%;
   top: 50%;
+  z-index: -1;
+}
+.swiper-lazy-preloader {
+  z-index: 0;
 }
 /*# sourceMappingURL=swiper.css.map */

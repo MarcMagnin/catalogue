@@ -728,6 +728,12 @@
     <Content Include="css\search.min.css">
       <DependentUpon>search.css</DependentUpon>
     </Content>
+    <Content Include="css\swiper.css">
+      <DependentUpon>swiper.less</DependentUpon>
+    </Content>
+    <Content Include="css\swiper.min.css">
+      <DependentUpon>swiper.css</DependentUpon>
+    </Content>
     <Content Include="css\tags.css">
       <DependentUpon>tags.less</DependentUpon>
     </Content>
@@ -2760,6 +2766,10 @@
     <Content Include="css\datGUI.less" />
     <Content Include="css\datGUI.css.map">
       <DependentUpon>datGUI.css</DependentUpon>
+    </Content>
+    <Content Include="css\swiper.less" />
+    <Content Include="css\swiper.css.map">
+      <DependentUpon>swiper.css</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
