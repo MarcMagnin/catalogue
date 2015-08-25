@@ -1,0 +1,10 @@
+﻿[
+  {
+    "outputFile": "css/tile.css",
+    "inputFile": "css/tile.less"
+  },
+  {
+    "outputFile": "css/main.css",
+    "inputFile": "css/main.less"
+  }
+]
