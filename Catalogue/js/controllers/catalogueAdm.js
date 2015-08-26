@@ -12,8 +12,8 @@ var Update = function () {
 };
 
 app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q, itemService, $filter, $mdDialog, $upload) {
-    $rootScope.apiRootUrl = "http://62.23.104.30/databases/catalogueMaison";
-    //$rootScope.apiRootUrl = "http://localhost:8088/databases/catalogueMaison";
+    //$rootScope.apiRootUrl = "http://62.23.104.30/databases/catalogueMaison";
+    $rootScope.apiRootUrl = "http://localhost:8086/databases/catalogueMaison";
 
     $scope.entityName = "Item"
     $scope.itemsPool = [];
@@ -182,7 +182,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
 
 
 
-                resizeImage(file, $q.defer()).then(function (fileBlob) {
+                resizeImage(200, 200, file, $q.defer()).then(function (fileBlob) {
                     $upload.http({
                         url: $rootScope.apiRootUrl + '/static/' + item.Id + '/' + fileBlob.name,
                         method: "PUT",
@@ -196,18 +196,22 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
                         // mise à jour du livre avec l'URI de l'image
                         $scope.setAttachment(fileBlob.name, item, 'Image');
                         console.log(item.Id)
+                        item.$$hiImageUrl = $rootScope.apiRootUrl + "/static/" + item.Id + "/HI_" + fileBlob.name;
+                        item.$$imageUrl = $rootScope.apiRootUrl + "/static/" + item.Id + "/" + fileBlob.name;
                         var fileReader = new FileReader();
                         fileReader.onload = function (e) {
                             // upload hi resolution
-                            $upload.http({
-                                url: $rootScope.apiRootUrl + '/static/' + item.Id + '/HI_' + file.name,
-                                method: "PUT",
-                                headers: { 'Content-Type': file.type },
-                                data: e.target.result
-                            }).progress(function (evt) {
-                                // Math.min is to fix IE which reports 200% sometimes
-                                //   $scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-                                console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+                            resizeImage(1500, 1500, file, $q.defer()).then(function (fileBlob) {
+                                $upload.http({
+                                    url: $rootScope.apiRootUrl + '/static/' + item.Id + '/HI_' + fileBlob.name,
+                                    method: "PUT",
+                                    headers: { 'Content-Type': fileBlob.blob.type },
+                                    data: fileBlob.blob
+                                }).progress(function (evt) {
+                                    // Math.min is to fix IE which reports 200% sometimes
+                                    //   $scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                                    console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+                                })
                             }).success(function (data, status, headers, config) {
                                 // mise à jour du livre avec l'URI de l'image
                                 // $scope.setAttachment('HI_' + file.name, item, 'ImageHi');
@@ -215,6 +219,23 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
                             }).error(function (err) {
                                 alert('Error occured during upload');
                             });
+
+                            //$upload.http({
+                            //    url: $rootScope.apiRootUrl + '/static/' + item.Id + '/HI_' + file.name,
+                            //    method: "PUT",
+                            //    headers: { 'Content-Type': file.type },
+                            //    data: e.target.result
+                            //}).progress(function (evt) {
+                            //    // Math.min is to fix IE which reports 200% sometimes
+                            //    //   $scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                            //    console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+                            //}).success(function (data, status, headers, config) {
+                            //    // mise à jour du livre avec l'URI de l'image
+                            //    // $scope.setAttachment('HI_' + file.name, item, 'ImageHi');
+
+                            //}).error(function (err) {
+                            //    alert('Error occured during upload');
+                            //});
                         }
                         fileReader.readAsArrayBuffer(file);
 

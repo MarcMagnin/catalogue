@@ -136,7 +136,28 @@ if ($(window).width() < maxWidth) {
     enableAnimation = true;
 }
 
+function throttle(fn, threshhold, scope) {
+    threshhold || (threshhold = 250);
+    var last,
+        deferTimer;
+    return function () {
+        var context = scope || this;
 
+        var now = +new Date,
+            args = arguments;
+        if (last && now < last + threshhold) {
+            // hold on to it
+            clearTimeout(deferTimer);
+            deferTimer = setTimeout(function () {
+                last = now;
+                fn.apply(context, args);
+            }, threshhold);
+        } else {
+            last = now;
+            fn.apply(context, args);
+        }
+    };
+}
 
 function dataURLToBlob(dataURL, fileName) {
     var BASE64_MARKER = ';base64,';
@@ -162,7 +183,7 @@ function dataURLToBlob(dataURL, fileName) {
     return new Blob([uInt8Array], { type: contentType });
 };
 
-function resizeImage(current_file, defer) {
+function resizeImage(maxWidth, maxHeight, current_file, defer) {
 
     var reader = new FileReader();
     if (current_file.type.indexOf('image') == 0) {
@@ -171,9 +192,7 @@ function resizeImage(current_file, defer) {
             image.src = event.target.result;
 
             image.onload = function () {
-                var maxWidth = 200,
-                    maxHeight = 200,
-                    imageWidth = image.width,
+                  var imageWidth = image.width,
                     imageHeight = image.height;
 
 
