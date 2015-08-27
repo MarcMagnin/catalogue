@@ -182,7 +182,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
 
 
 
-                resizeImage(200, 200, file, $q.defer()).then(function (fileBlob) {
+                resizeImage(400, 400, file, $q.defer()).then(function (fileBlob) {
                     $upload.http({
                         url: $rootScope.apiRootUrl + '/static/' + item.Id + '/' + fileBlob.name,
                         method: "PUT",
