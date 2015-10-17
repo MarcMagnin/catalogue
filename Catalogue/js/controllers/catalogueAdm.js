@@ -83,8 +83,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
             } else {
                 $container.mixItUp('filter', $scope.searchPattern, filterCallback);
             }
-
-            if ($scope.itemsPool.length > 0 && $('#Container')[0].scrollHeight < $(window).height()) {
+            if ($scope.itemsPool.length > 0 && $('#Container')[0].scrollHeight <= $(window).height()) {
                 $scope.loadMore();
             }
         })
