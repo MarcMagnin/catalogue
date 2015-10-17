@@ -12,8 +12,8 @@ var Update = function () {
 };
 
 app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q, itemService, $filter, $mdDialog, $upload) {
-    //$rootScope.apiRootUrl = "http://62.23.104.30/databases/catalogueMaison";
-    $rootScope.apiRootUrl = "http://localhost:8086/databases/catalogueMaison";
+    $rootScope.apiRootUrl = "http://62.23.104.30/databases/catalogueMaison";
+    //$rootScope.apiRootUrl = "http://localhost:8086/databases/catalogueMaison";
 
     $scope.entityName = "Item"
     $scope.itemsPool = [];
@@ -83,9 +83,15 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
             } else {
                 $container.mixItUp('filter', $scope.searchPattern, filterCallback);
             }
-            if ($scope.itemsPool.length > 0 && $('#Container')[0].scrollHeight <= $(window).height()) {
-                $scope.loadMore();
-            }
+
+            setTimeout(function () {
+                console.log($('#Container')[0].scrollHeight)
+                console.log($(window).height())
+                if ($scope.itemsPool.length > 0 && $('#Container')[0].scrollHeight <= $(window).height()) {
+                    $scope.loadMore();
+                }
+            },200)
+           
         })
     };
 
