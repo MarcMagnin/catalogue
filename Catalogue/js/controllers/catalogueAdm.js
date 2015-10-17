@@ -85,8 +85,6 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
             }
 
             setTimeout(function () {
-                console.log($('#Container')[0].scrollHeight)
-                console.log($(window).height())
                 if ($scope.itemsPool.length > 0 && $('#Container')[0].scrollHeight <= $(window).height()) {
                     $scope.loadMore();
                 }
