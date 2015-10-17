@@ -333,7 +333,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
     function filterCallback(state) {
         if ($scope.searchedText.Val) {
             $scope.shownItems = $.grep($scope.items, function (e) {
-                return e.filter.indexOf("f-" + $scope.searchedText.Val) != -1;
+                return e.$$filter.indexOf("f-" + $scope.searchedText.Val) != -1;
             });
         } else {
             $scope.shownItems = $scope.items;
@@ -382,7 +382,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
 
         // add items that are still in the pool and match the filter
         var items = $.grep($scope.itemsPool, function (e) {
-            return e.filter.indexOf("f-" + $scope.searchedText.Val) != -1;
+            return e.$$filter.indexOf("f-" + $scope.searchedText.Val) != -1;
         });
         if (items.length > 0) {
             loadMoreFromFilter(items);
