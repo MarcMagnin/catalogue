@@ -90,7 +90,7 @@ app.controller("catalogueAdm", function ($scope, $rootScope, $http, $timeout, $q
                 if ($scope.itemsPool.length > 0 && $('#Container')[0].scrollHeight <= $(window).height()) {
                     $scope.loadMore();
                 }
-            },200)
+            },500)
            
         })
     };
